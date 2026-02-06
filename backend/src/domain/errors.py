@@ -13,6 +13,16 @@ class UnauthorizedError(DomainError):
     pass
 
 
+class WorkspaceNotFoundError(DomainError):
+    """Raised when a workspace is not found"""
+    pass
+
+
+class MemberNotFoundError(DomainError):
+    """Raised when a member is not found"""
+    pass
+
+
 class NotFoundError(DomainError):
     """Raised when a resource is not found"""
     pass

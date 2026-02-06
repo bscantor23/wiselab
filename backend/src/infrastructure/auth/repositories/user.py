@@ -30,7 +30,8 @@ class SQLUserRepository(UserRepository):
 
     async def list(self) -> List[User]:
         result = await self._session.execute(select(UserORM))
-        return [UserMapper.to_domain(orm_user) for orm_user in result.scalars()]
+        return [UserMapper.to_domain(orm_user)
+                for orm_user in result.scalars()]
 
     async def remove(self, user: User) -> None:
         orm_user = await self._session.get(UserORM, user.id)

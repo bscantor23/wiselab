@@ -4,7 +4,8 @@ import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from src.infrastructure.database import Base, DATABASE_URL
-from src.infrastructure.auth.models import UserORM # Ensure models are loaded
+from src.infrastructure.auth.models import UserORM
+from src.infrastructure.workspace.models import WorkspaceORM, WorkspaceMemberORM
 
 # Use a test database URL
 database_name = "wiselab_test"

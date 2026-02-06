@@ -1,13 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes.auth import router as auth_router
+from src.api.routes import auth, workspace
 
 
 app = FastAPI(
     title="WiseLab Financial Planning API",
     description="Backend for the Personal Financial Planning System",
-    version="0.1.0"
+    version="0.1.0",
+    swagger_ui_parameters={
+        "persistAuthorization": True
+    }
 )
 
 app.add_middleware(
@@ -18,7 +21,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router)
+app.include_router(auth.router)
+app.include_router(workspace.router)
 
 
 @app.get("/")

@@ -11,6 +11,7 @@ from alembic import context
 from src.infrastructure.database import Base, DATABASE_URL
 # Import all models to ensure they are registered with Base.metadata
 from src.infrastructure.auth.models import UserORM
+from src.infrastructure.workspace.models import WorkspaceORM, WorkspaceMemberORM
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

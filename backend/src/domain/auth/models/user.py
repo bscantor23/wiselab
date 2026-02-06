@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from src.domain.base import Entity
 from src.domain.auth.value_objects import Email
 
+
 class User(Entity):
     def __init__(
         self,

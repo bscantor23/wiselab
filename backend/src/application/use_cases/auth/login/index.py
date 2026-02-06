@@ -12,16 +12,19 @@ class LoginUser:
 
     async def execute(self, data: LoginUserRequestDto) -> LoginUserResponseDto:
         user = await self._user_repo.get_by_email(Email(data.email))
-        if not user or not Hasher.verify_password(data.password, user.password_hash):
+        if not user or not Hasher.verify_password(
+                data.password, user.password_hash):
             raise UnauthorizedError("Invalid credentials")
-        
+
         if not user.is_active:
             raise UnauthorizedError("User account is deactivated")
 
         payload = {"sub": str(user.id)}
-        access_token = JWTService.create_token(data=payload, token_type="access")
-        refresh_token = JWTService.create_token(data=payload, token_type="refresh")
-        
+        access_token = JWTService.create_token(
+            data=payload, token_type="access")
+        refresh_token = JWTService.create_token(
+            data=payload, token_type="refresh")
+
         return LoginUserResponseDto(
             access_token=access_token,
             refresh_token=refresh_token

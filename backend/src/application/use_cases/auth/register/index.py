@@ -10,7 +10,9 @@ class RegisterUser:
     def __init__(self, user_repo: UserRepository):
         self._user_repo = user_repo
 
-    async def execute(self, data: RegisterUserRequestDto) -> RegisterUserResponseDto:
+    async def execute(
+            self,
+            data: RegisterUserRequestDto) -> RegisterUserResponseDto:
         existing_user = await self._user_repo.get_by_email(Email(data.email))
         if existing_user:
             raise ValidationError("Email already registered")

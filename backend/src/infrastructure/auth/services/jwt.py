@@ -5,7 +5,8 @@ import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "5SJ3@Nv715c6")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(
+    os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 
 class JWTService:
@@ -23,7 +24,7 @@ class JWTService:
                 expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             else:
                 expire = datetime.utcnow() + timedelta(days=7)
-        
+
         to_encode.update({"exp": expire, "type": token_type})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt

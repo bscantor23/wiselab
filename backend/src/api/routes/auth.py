@@ -13,15 +13,16 @@ from src.application.use_cases.auth.refresh.index import RefreshToken
 from src.application.use_cases.auth.refresh.dtos import RefreshTokenRequestDto
 
 
-
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-async def get_user_repository(session: AsyncSession = Depends(get_db)) -> SQLUserRepository:
+async def get_user_repository(
+        session: AsyncSession = Depends(get_db)) -> SQLUserRepository:
     return SQLUserRepository(session)
 
 
-@router.post("/register", response_model=RegisterUserResponseDto, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=RegisterUserResponseDto,
+             status_code=status.HTTP_201_CREATED)
 async def register(
     data: RegisterUserRequestDto,
     session: AsyncSession = Depends(get_db),
@@ -34,14 +35,19 @@ async def register(
         return user
     except ValidationError as e:
         await session.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e))
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e))
 
 
 @router.post("/login", response_model=LoginUserResponseDto)
 async def login(
+
     data: LoginUserRequestDto,
     user_repo: SQLUserRepository = Depends(get_user_repository)
 ):
@@ -49,9 +55,13 @@ async def login(
     try:
         return await use_case.execute(data)
     except UnauthorizedError as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e))
 
 
 @router.post("/refresh", response_model=LoginUserResponseDto)
@@ -63,9 +73,10 @@ async def refresh(
     try:
         return await use_case.execute(data)
     except UnauthorizedError as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e))
