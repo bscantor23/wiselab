@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 import uuid
 
+
 class Entity(ABC):
     def __init__(self, id: Optional[uuid.UUID] = None):
         self._id = id or uuid.uuid4()

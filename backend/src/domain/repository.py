@@ -4,6 +4,7 @@ from uuid import UUID
 
 T = TypeVar("T")
 
+
 class Repository(ABC, Generic[T]):
     @abstractmethod
     async def add(self, entity: T) -> None:

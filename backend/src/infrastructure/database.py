@@ -16,8 +16,10 @@ naming_convention = {
 
 metadata = MetaData(naming_convention=naming_convention)
 
+
 class Base(DeclarativeBase):
     metadata = metadata
+
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 
@@ -26,6 +28,7 @@ async_session = async_sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
 )
+
 
 async def get_db():
     async with async_session() as session:
