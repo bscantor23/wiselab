@@ -1,0 +1,15 @@
+[run]
+source = src
+branch = True
+
+[report]
+show_missing = True
+skip_covered = True
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if __name__ == .__main__.:
+    raise NotImplementedError
+    pass
+    @abstractmethod

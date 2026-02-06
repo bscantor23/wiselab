@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Optional, List
+from typing import TypeVar, Generic, List, Optional
 from uuid import UUID
 
 T = TypeVar("T")
@@ -19,5 +19,5 @@ class Repository(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    async def remove(self, entity: T) -> None:
+    async def remove(self, id: UUID) -> None:
         pass

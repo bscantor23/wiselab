@@ -5,7 +5,6 @@ from sqlalchemy import MetaData
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@db/wiselab")
 
-# naming convention for constraints to help with alembic migrations
 naming_convention = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",

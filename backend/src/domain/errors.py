@@ -1,20 +1,18 @@
 class DomainError(Exception):
-    """Base class for all domain errors"""
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(self.message)
-
-
-class EntityNotFoundError(DomainError):
-    """Raised when an entity is not found"""
+    """Base class for domain errors"""
     pass
 
 
 class ValidationError(DomainError):
-    """Raised when a domain validation fails"""
+    """Raised when data validation fails"""
     pass
 
 
 class UnauthorizedError(DomainError):
-    """Raised when an operation is unauthorized"""
+    """Raised when authentication or authorization fails"""
+    pass
+
+
+class NotFoundError(DomainError):
+    """Raised when a resource is not found"""
     pass

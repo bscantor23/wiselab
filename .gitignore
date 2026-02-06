@@ -27,7 +27,8 @@ share/python-wheels/
 MANIFEST
 
 # PyInstaller
-#  Used to bundle Python applications into stand-alone executables
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
 
@@ -46,9 +47,9 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-.hypothesis/
+.基礎/
 .pytest_cache/
-cover/
+pytest_debug_log.txt
 
 # Translations
 *.mo
@@ -82,31 +83,26 @@ profile_default/
 ipython_config.py
 
 # pyenv
-#   For a library or package, you might want to ignore these files since the advantage of
-#   pyenv is to allow for many versions of Python to coexistence and be switched between
-#   easily. For an application, you probably want to keep them.
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
 # .python-version
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
 #   However, in case of collaboration, if having platform-specific dependencies or dependencies
 #   having no cross-platform support, pipenv may install dependencies that don't work, or even
-#   fail all together. If that's the case, ignore Pipfile.lock.
+#   fail to install them.
 #Pipfile.lock
 
 # poetry
 #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   poetry.lock
-#   pyproject.toml
+#poetry.lock
 
 # pdm
 #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
 #pdm.lock
-#   pdm.toml
-.pdm-python
-.pdm-build/
 
-# PEP 582; used by e.g. github.com/fannheyward/coc-pyright
+# PEP 582; used by e.g. github.com/pdm-project/pdm
 __pypackages__/
 
 # Celery stuff
@@ -149,16 +145,20 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# PyCharm
-#  JetBrains specific template is maintained in a separate local template
-.idea/
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
 # VS Code
 .vscode/
 
-# Docker
-.docker
-*.log
+# PyCharm
+.idea/
 
-# OS
-.DS_Store
+# Docker
+.docker/

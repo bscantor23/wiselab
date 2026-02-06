@@ -1,17 +1,16 @@
-from abc import ABC
-from datetime import datetime
+from uuid import UUID, uuid4
+from datetime import datetime, timezone
 from typing import Optional
-import uuid
 
 
-class Entity(ABC):
-    def __init__(self, id: Optional[uuid.UUID] = None):
-        self._id = id or uuid.uuid4()
-        self._created_at = datetime.utcnow()
-        self._updated_at = datetime.utcnow()
+class Entity:
+    def __init__(self, id: Optional[UUID] = None):
+        self._id = id or uuid4()
+        self._created_at = datetime.now(timezone.utc)
+        self._updated_at = self._created_at
 
     @property
-    def id(self) -> uuid.UUID:
+    def id(self) -> UUID:
         return self._id
 
     @property
@@ -25,7 +24,7 @@ class Entity(ABC):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Entity):
             return False
-        return self.id == other.id
+        return self._id == other._id
 
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self._id)

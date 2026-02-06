@@ -19,6 +19,8 @@ services:
     container_name: wiselab_backend
     volumes:
       - ./backend:/app
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
     ports:
       - "8000:8000"
     environment:

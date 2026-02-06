@@ -46,11 +46,11 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 backend/src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Run tests
+    - name: Run tests with coverage
       env:
         DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/wiselab_test
         SECRET_KEY: test-secret-key
-        PYTHONPATH: backend
+        PYTHONPATH: .
       run: |
         cd backend
-        pytest
+        pytest --cov=src --cov-report=term-missing --cov-fail-under=80
