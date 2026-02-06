@@ -1,8 +1,9 @@
 from uuid import UUID
+
+from src.domain.auth.models import User
+from src.domain.errors import UnauthorizedError, WorkspaceNotFoundError
 from src.domain.workspace.models import Workspace
 from src.domain.workspace.repositories import WorkspaceRepository
-from src.domain.auth.models import User
-from src.domain.errors import WorkspaceNotFoundError, UnauthorizedError
 
 
 class GetWorkspace:
@@ -14,7 +15,6 @@ class GetWorkspace:
         if not workspace:
             raise WorkspaceNotFoundError("Workspace not found")
 
-        # Check access: owner or member
         if workspace.owner_id == user.id:
             return workspace
 

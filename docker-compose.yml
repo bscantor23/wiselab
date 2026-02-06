@@ -28,6 +28,8 @@ services:
       SECRET_KEY: ${SECRET_KEY:-5SJ3@Nv715c6}
       ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      SEED_DB: ${SEED_DB:-false}
+      RESET_DB: ${RESET_DB:-false}
     depends_on:
       - db
 

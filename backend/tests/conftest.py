@@ -26,12 +26,26 @@ async def setup_test_db():
             await conn.execute(text(f"CREATE DATABASE {database_name}"))
     await engine.dispose()
 
+from src.infrastructure.budget.models.category import CategoryORM
+import uuid
+
 @pytest_asyncio.fixture
 async def db_engine():
     engine = create_async_engine(TEST_DATABASE_URL)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+        
+        # Seed default categories for tests
+        default_categories = [
+            {"id": uuid.uuid4(), "name": "Housing", "is_default": True},
+            {"id": uuid.uuid4(), "name": "Food", "is_default": True},
+            {"id": uuid.uuid4(), "name": "Transportation", "is_default": True},
+            {"id": uuid.uuid4(), "name": "Entertainment", "is_default": True},
+            {"id": uuid.uuid4(), "name": "Utilities", "is_default": True},
+        ]
+        await conn.execute(CategoryORM.__table__.insert(), default_categories)
+    
     yield engine
     await engine.dispose()
 

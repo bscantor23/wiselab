@@ -1,7 +1,8 @@
 from uuid import UUID
-from src.domain.workspace.repositories import WorkspaceRepository
+
 from src.domain.auth.models import User
-from src.domain.errors import WorkspaceNotFoundError, UnauthorizedError
+from src.domain.errors import UnauthorizedError, WorkspaceNotFoundError
+from src.domain.workspace.repositories import WorkspaceRepository
 
 
 class DeleteWorkspace:
@@ -14,8 +15,6 @@ class DeleteWorkspace:
             raise WorkspaceNotFoundError("Workspace not found")
 
         if workspace.owner_id != user.id:
-            raise UnauthorizedError(
-                "Only the workspace owner can delete the workspace"
-            )
+            raise UnauthorizedError("Only the workspace owner can delete the workspace")
 
         await self._repo.remove(workspace)

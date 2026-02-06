@@ -1,7 +1,8 @@
 from typing import List
-from src.domain.workspace.repositories import WorkspaceRepository
-from src.domain.workspace.models import Workspace
+
 from src.domain.auth.models import User
+from src.domain.workspace.models import Workspace
+from src.domain.workspace.repositories import WorkspaceRepository
 
 
 class ListWorkspaces:

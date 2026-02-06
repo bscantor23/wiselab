@@ -1,44 +1,8 @@
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
-from datetime import datetime, timezone
+
 from src.domain.base import Entity
-from src.domain.workspace.value_objects import WorkspaceRole
-
-
-class WorkspaceMember(Entity):
-
-    def __init__(
-        self,
-        workspace_id: UUID,
-        user_id: UUID,
-        role: WorkspaceRole,
-        joined_at: Optional[datetime] = None,
-        id: Optional[UUID] = None
-    ):
-        super().__init__(id)
-        self._workspace_id = workspace_id
-        self._user_id = user_id
-        self._role = role
-        self._joined_at = joined_at or datetime.now(timezone.utc)
-
-    @property
-    def workspace_id(self) -> UUID:
-        return self._workspace_id
-
-    @property
-    def user_id(self) -> UUID:
-        return self._user_id
-
-    @property
-    def role(self) -> WorkspaceRole:
-        return self._role
-
-    @property
-    def joined_at(self) -> datetime:
-        return self._joined_at
-
-    def change_role(self, new_role: WorkspaceRole):
-        self._role = new_role
 
 
 class Workspace(Entity):
@@ -50,7 +14,7 @@ class Workspace(Entity):
         is_active: bool = True,
         created_at: Optional[datetime] = None,
         updated_at: Optional[datetime] = None,
-        id: Optional[UUID] = None
+        id: Optional[UUID] = None,
     ):
         super().__init__(id)
         self._name = name
@@ -85,9 +49,8 @@ class Workspace(Entity):
         return self._updated_at
 
     def update_details(
-            self,
-            name: Optional[str] = None,
-            description: Optional[str] = None):
+        self, name: Optional[str] = None, description: Optional[str] = None
+    ):
         if name:
             self._name = name
         if description is not None:

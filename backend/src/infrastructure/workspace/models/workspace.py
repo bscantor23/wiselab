@@ -1,9 +1,17 @@
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, text, UniqueConstraint
+import uuid
+from datetime import datetime
 
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    String,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
 
 from src.infrastructure.database import Base
 
@@ -11,32 +19,35 @@ from src.infrastructure.database import Base
 class WorkspaceORM(Base):
     __tablename__ = "workspaces"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True,
-                server_default=text("gen_random_uuid()"))
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        index=True,
+        server_default=text("gen_random_uuid()"),
+    )
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     owner_id = Column(
-        UUID(
-            as_uuid=True),
-        ForeignKey(
-            "users.id",
-            ondelete="CASCADE"),
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
-        index=True)
+        index=True,
+    )
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at = Column(
-        DateTime(
-            timezone=True),
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow)
+        DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     # Relationships
     owner = relationship("UserORM", backref="owned_workspaces")
     members = relationship(
-        "WorkspaceMemberORM",
-        back_populates="workspace",
-        cascade="all, delete-orphan")
+        "WorkspaceMemberORM", back_populates="workspace", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        UniqueConstraint("owner_id", "name", name="uq_workspace_owner_name"),
+    )
 
 
 class WorkspaceMemberORM(Base):
@@ -44,17 +55,14 @@ class WorkspaceMemberORM(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     workspace_id = Column(
-        UUID(
-            as_uuid=True),
+        UUID(as_uuid=True),
         ForeignKey("workspaces.id", ondelete="CASCADE"),
         nullable=False,
-        index=True)
+        index=True,
+    )
     user_id = Column(
-        UUID(
-            as_uuid=True),
-        ForeignKey("users.id"),
-        nullable=False,
-        index=True)
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
+    )
     role = Column(String, nullable=False)
     joined_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
@@ -63,8 +71,5 @@ class WorkspaceMemberORM(Base):
     user = relationship("UserORM", backref="workspace_memberships")
 
     __table_args__ = (
-        UniqueConstraint(
-            'workspace_id',
-            'user_id',
-            name='uq_workspace_member'),
+        UniqueConstraint("workspace_id", "user_id", name="uq_workspace_member"),
     )

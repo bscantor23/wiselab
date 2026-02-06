@@ -1,24 +1,27 @@
+import uuid
+
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.infrastructure.database import get_db
-from src.infrastructure.auth.services.jwt import JWTService
-from src.infrastructure.auth.repositories import SQLUserRepository
+
 from src.domain.auth.models import User
-import uuid
+from src.infrastructure.auth.repositories import SQLUserRepository
+from src.infrastructure.auth.services.jwt import JWTService
+from src.infrastructure.database import get_db
 
 security = HTTPBearer()
 
 
 async def get_user_repository(
-        session: AsyncSession = Depends(get_db)) -> SQLUserRepository:
+    session: AsyncSession = Depends(get_db),
+) -> SQLUserRepository:
     return SQLUserRepository(session)
 
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    session: AsyncSession = Depends(get_db)
+    session: AsyncSession = Depends(get_db),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,8 +45,7 @@ async def get_current_user(
 
     if not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="User account is deactivated"
+            status_code=status.HTTP_403_FORBIDDEN, detail="User account is deactivated"
         )
 
     return user

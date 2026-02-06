@@ -20,6 +20,10 @@ class WorkspaceRepository(Repository, ABC):
         pass
 
     @abstractmethod
+    async def get_by_name_and_owner(self, name: str, owner_id: UUID) -> Optional[Workspace]:
+        pass
+
+    @abstractmethod
     async def update(self, workspace: Workspace) -> None:
         pass
 
@@ -27,16 +31,14 @@ class WorkspaceRepository(Repository, ABC):
     async def remove(self, workspace: Workspace) -> None:
         pass
 
-    # Member operations
     @abstractmethod
     async def add_member(self, member: WorkspaceMember) -> None:
         pass
 
     @abstractmethod
     async def get_member(
-            self,
-            workspace_id: UUID,
-            user_id: UUID) -> Optional[WorkspaceMember]:
+        self, workspace_id: UUID, user_id: UUID
+    ) -> Optional[WorkspaceMember]:
         pass
 
     @abstractmethod

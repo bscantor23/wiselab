@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+
 from src.domain.workspace.value_objects import WorkspaceRole
 
 

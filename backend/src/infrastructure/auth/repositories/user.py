@@ -1,13 +1,14 @@
 from typing import List, Optional
 from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.auth.models import User
-from src.domain.auth.value_objects import Email
 from src.domain.auth.repositories import UserRepository
-from src.infrastructure.auth.models import UserORM
+from src.domain.auth.value_objects import Email
 from src.infrastructure.auth.mappers import UserMapper
+from src.infrastructure.auth.models import UserORM
 
 
 class SQLUserRepository(UserRepository):
@@ -24,14 +25,15 @@ class SQLUserRepository(UserRepository):
         return UserMapper.to_domain(orm_user) if orm_user else None
 
     async def get_by_email(self, email: Email) -> Optional[User]:
-        result = await self._session.execute(select(UserORM).filter_by(email=email.value))
+        result = await self._session.execute(
+            select(UserORM).filter_by(email=email.value)
+        )
         orm_user = result.scalar_one_or_none()
         return UserMapper.to_domain(orm_user) if orm_user else None
 
     async def list(self) -> List[User]:
         result = await self._session.execute(select(UserORM))
-        return [UserMapper.to_domain(orm_user)
-                for orm_user in result.scalars()]
+        return [UserMapper.to_domain(orm_user) for orm_user in result.scalars()]
 
     async def remove(self, user: User) -> None:
         orm_user = await self._session.get(UserORM, user.id)

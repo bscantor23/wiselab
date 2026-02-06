@@ -1,12 +1,12 @@
+import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
+
 from jose import jwt
-import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "5SJ3@Nv715c6")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(
-    os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 
 class JWTService:
@@ -14,14 +14,16 @@ class JWTService:
     def create_token(
         data: Dict[str, Any],
         expires_delta: Optional[timedelta] = None,
-        token_type: str = "access"
+        token_type: str = "access",
     ) -> str:
         to_encode = data.copy()
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
             if token_type == "access":
-                expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+                expire = datetime.utcnow() + timedelta(
+                    minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+                )
             else:
                 expire = datetime.utcnow() + timedelta(days=7)
 

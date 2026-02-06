@@ -38,7 +38,12 @@ async def test_workspace_repository_flow(db_session: AsyncSession):
     workspaces = await workspace_repo.list_by_user(owner.id)
     assert len(workspaces) == 1
     assert workspaces[0].id == workspace.id
-    
+
+    # 4.1 Get by name and owner
+    found_by_name = await workspace_repo.get_by_name_and_owner("Test Workspace", owner.id)
+    assert found_by_name is not None
+    assert found_by_name.id == workspace.id
+
     # 5. Add member
     member_user = User(email=Email("member@example.com"), password_hash="hash", full_name="Member User")
     await user_repo.add(member_user)

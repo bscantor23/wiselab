@@ -11,7 +11,7 @@ class UserMapper:
             password_hash=orm_user.password_hash,
             full_name=orm_user.full_name,
             is_active=orm_user.is_active,
-            id=orm_user.id
+            id=orm_user.id,
         )
 
     @staticmethod
@@ -23,5 +23,5 @@ class UserMapper:
             full_name=user.full_name,
             is_active=user.is_active,
             created_at=user.created_at,
-            updated_at=user.updated_at
+            updated_at=user.updated_at,
         )

@@ -1,4 +1,5 @@
 import re
+
 from src.domain.errors import ValidationError
 
 

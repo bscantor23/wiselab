@@ -14,6 +14,7 @@ def mock_workspace_repo():
     repo.add = AsyncMock()
     repo.get_by_id = AsyncMock(return_value=None)
     repo.list_by_user = AsyncMock(return_value=[])
+    repo.get_by_name_and_owner = AsyncMock(return_value=None)
     repo.add_member = AsyncMock()
     repo.get_member = AsyncMock(return_value=None)
     repo.list_members = AsyncMock(return_value=[])

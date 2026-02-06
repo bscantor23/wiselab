@@ -1,8 +1,9 @@
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
-from datetime import datetime, timezone
-from src.domain.base import Entity
+
 from src.domain.auth.value_objects import Email
+from src.domain.base import Entity
 
 
 class User(Entity):
@@ -14,7 +15,7 @@ class User(Entity):
         is_active: bool = True,
         created_at: Optional[datetime] = None,
         updated_at: Optional[datetime] = None,
-        id: Optional[UUID] = None
+        id: Optional[UUID] = None,
     ):
         super().__init__(id)
         self._email = email

@@ -19,7 +19,7 @@ from src.domain.workspace.value_objects import WorkspaceRole
 from src.domain.auth.models import User
 from src.domain.auth.value_objects import Email
 from src.domain.errors import (
-    WorkspaceNotFoundError, UnauthorizedError, ValidationError, NotFoundError, MemberNotFoundError
+    WorkspaceNotFoundError, UnauthorizedError, ValidationError, NotFoundError, MemberNotFoundError, ConflictError
 )
 
 @pytest.mark.asyncio
@@ -33,6 +33,15 @@ async def test_create_workspace(mock_workspace_repo, mock_user_entity):
     assert result.owner_id == mock_user_entity.id
     assert mock_workspace_repo.add.called
     assert mock_workspace_repo.add_member.called
+
+@pytest.mark.asyncio
+async def test_create_workspace_duplicate_name(mock_workspace_repo, mock_user_entity, mock_workspace_entity):
+    mock_workspace_repo.get_by_name_and_owner = AsyncMock(return_value=mock_workspace_entity)
+    use_case = CreateWorkspace(mock_workspace_repo)
+    data = CreateWorkspaceRequestDto(name=mock_workspace_entity.name)
+
+    with pytest.raises(ConflictError):
+        await use_case.execute(mock_user_entity, data)
 
 @pytest.mark.asyncio
 async def test_list_workspaces(mock_workspace_repo, mock_user_entity, mock_workspace_entity):
@@ -129,6 +138,21 @@ async def test_update_workspace_description_only(mock_workspace_repo, mock_user_
     result = await use_case.execute(mock_workspace_entity.id, mock_user_entity, data)
     assert result.description == "New Desc"
     assert mock_workspace_repo.update.called
+
+@pytest.mark.asyncio
+async def test_update_workspace_duplicate_name(mock_workspace_repo, mock_user_entity, mock_workspace_entity):
+    # Current workspace
+    mock_workspace_repo.get_by_id = AsyncMock(return_value=mock_workspace_entity)
+    
+    # Another workspace with the same desired name
+    another_ws = Workspace(name="Existing Name", owner_id=mock_user_entity.id, id=uuid4())
+    mock_workspace_repo.get_by_name_and_owner = AsyncMock(return_value=another_ws)
+    
+    use_case = UpdateWorkspace(mock_workspace_repo)
+    data = UpdateWorkspaceRequestDto(name="Existing Name")
+    
+    with pytest.raises(ConflictError):
+        await use_case.execute(mock_workspace_entity.id, mock_user_entity, data)
 
 @pytest.mark.asyncio
 async def test_update_workspace_success_admin(mock_workspace_repo, mock_user_entity):

@@ -27,6 +27,7 @@ async def test_create_workspace_route(mock_user_obj):
     mock_repo = AsyncMock()
     mock_repo.add = AsyncMock()
     mock_repo.add_member = AsyncMock()
+    mock_repo.get_by_name_and_owner = AsyncMock(return_value=None)
 
     app.dependency_overrides[get_current_user] = lambda: mock_user_obj
     app.dependency_overrides[get_workspace_repository] = lambda: mock_repo
@@ -92,6 +93,7 @@ async def test_update_workspace_route(mock_user_obj):
     ws_real = Workspace(name="Old", description="Desc", owner_id=mock_user_obj.id, id=wid)
     mock_repo.get_by_id.return_value = ws_real
     mock_repo.update = AsyncMock()
+    mock_repo.get_by_name_and_owner = AsyncMock(return_value=None)
 
     app.dependency_overrides[get_current_user] = lambda: mock_user_obj
     app.dependency_overrides[get_workspace_repository] = lambda: mock_repo

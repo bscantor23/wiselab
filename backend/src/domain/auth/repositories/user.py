@@ -1,8 +1,9 @@
 from abc import abstractmethod
 from typing import Optional
-from src.domain.repository import Repository
+
 from src.domain.auth.models import User
 from src.domain.auth.value_objects import Email
+from src.domain.repository import Repository
 
 
 class UserRepository(Repository[User]):

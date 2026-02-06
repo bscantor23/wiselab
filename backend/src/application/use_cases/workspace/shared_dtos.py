@@ -1,12 +1,15 @@
-from pydantic import BaseModel, ConfigDict
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
+
 from src.domain.workspace.value_objects import WorkspaceRole
 
 
 class WorkspaceResponseDto(BaseModel):
     """Shared response DTO for workspace operations"""
+
     id: UUID
     name: str
     description: Optional[str] = None
@@ -20,7 +23,8 @@ class WorkspaceResponseDto(BaseModel):
 
 class WorkspaceMemberResponseDto(BaseModel):
     """Shared response DTO for workspace member operations"""
-    id: Optional[UUID]  # Owner member has no ID (synthetic)
+
+    id: Optional[UUID]
     workspace_id: UUID
     user_id: UUID
     role: WorkspaceRole
