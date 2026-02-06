@@ -2,7 +2,7 @@ import uuid
 
 from jose import JWTError
 
-from src.application.use_cases.auth.login.dtos import LoginUserResponseDto
+from src.application.use_cases.auth.login.dtos import LoginUserResponseDto, UserResponseDto
 from src.domain.auth.repositories import UserRepository
 from src.domain.errors import UnauthorizedError
 from src.infrastructure.auth.services.jwt import JWTService
@@ -36,7 +36,9 @@ class RefreshToken:
             )
 
             return LoginUserResponseDto(
-                access_token=access_token, refresh_token=refresh_token
+                user=UserResponseDto.model_validate(user),
+                access_token=access_token,
+                refresh_token=refresh_token
             )
         except JWTError:
             raise UnauthorizedError("Invalid refresh token")

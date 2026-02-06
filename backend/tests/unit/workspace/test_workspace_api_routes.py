@@ -35,7 +35,7 @@ async def test_create_workspace_route(mock_user_obj):
 
     async with AsyncClient(app=app, base_url="http://test") as client:
         payload = {"name": "New", "description": "Desc"}
-        resp = await client.post("/workspaces", json=payload)
+        resp = await client.post("/api/workspaces", json=payload)
         assert resp.status_code == 201
         assert resp.json()["name"] == "New"
         
@@ -51,7 +51,7 @@ async def test_list_workspaces_route(mock_user_obj):
     app.dependency_overrides[get_workspace_repository] = lambda: mock_repo
 
     async with AsyncClient(app=app, base_url="http://test") as client:
-        resp = await client.get("/workspaces")
+        resp = await client.get("/api/workspaces")
         assert resp.status_code == 200
         assert resp.json() == []
 
@@ -72,14 +72,14 @@ async def test_get_workspace_route(mock_user_obj):
     app.dependency_overrides[get_db] = lambda: AsyncMock()
 
     async with AsyncClient(app=app, base_url="http://test") as client:
-        resp = await client.get(f"/workspaces/{wid}")
+        resp = await client.get(f"/api/workspaces/{wid}")
         assert resp.status_code == 200
         assert resp.json()["id"] == str(wid)
         
     # Not Found
     mock_repo.get_by_id.return_value = None
     async with AsyncClient(app=app, base_url="http://test") as client:
-        resp = await client.get(f"/workspaces/{wid}")
+        resp = await client.get(f"/api/workspaces/{wid}")
         assert resp.status_code == 404
 
     app.dependency_overrides = {}
@@ -100,7 +100,7 @@ async def test_update_workspace_route(mock_user_obj):
     app.dependency_overrides[get_db] = lambda: AsyncMock()
 
     async with AsyncClient(app=app, base_url="http://test") as client:
-        resp = await client.put(f"/workspaces/{wid}", json={"name": "New Name"})
+        resp = await client.put(f"/api/workspaces/{wid}", json={"name": "New Name"})
         assert resp.status_code == 200
         assert resp.json()["name"] == "New Name"
         
@@ -121,7 +121,7 @@ async def test_delete_workspace_route(mock_user_obj):
     app.dependency_overrides[get_db] = lambda: AsyncMock()
 
     async with AsyncClient(app=app, base_url="http://test") as client:
-        resp = await client.delete(f"/workspaces/{wid}")
+        resp = await client.delete(f"/api/workspaces/{wid}")
         assert resp.status_code == 204
 
     app.dependency_overrides = {}
@@ -155,12 +155,12 @@ async def test_member_routes(mock_user_obj):
 
     async with AsyncClient(app=app, base_url="http://test") as client:
         # Invite
-        resp = await client.post(f"/workspaces/{wid}/members", json={"email": "new@test.com", "role": "viewer"})
+        resp = await client.post(f"/api/workspaces/{wid}/members", json={"email": "new@test.com", "role": "viewer"})
         assert resp.status_code == 201
         
         # List
         mock_ws_repo.list_members.return_value = []
-        resp = await client.get(f"/workspaces/{wid}/members")
+        resp = await client.get(f"/api/workspaces/{wid}/members")
         assert resp.status_code == 200
 
         # Update Role (need member to exist)
@@ -169,13 +169,13 @@ async def test_member_routes(mock_user_obj):
         mock_ws_repo.get_member.return_value = member_real
         mock_ws_repo.update_member = AsyncMock()
         
-        resp = await client.put(f"/workspaces/{wid}/members/{uid}", json={"role": "editor"})
+        resp = await client.put(f"/api/workspaces/{wid}/members/{uid}", json={"role": "editor"})
         assert resp.status_code == 200
         assert resp.json()["role"] == "editor"
         
         # Remove
         mock_ws_repo.remove_member = AsyncMock()
-        resp = await client.delete(f"/workspaces/{wid}/members/{uid}")
+        resp = await client.delete(f"/api/workspaces/{wid}/members/{uid}")
         assert resp.status_code == 204
 
     app.dependency_overrides = {}
@@ -198,113 +198,113 @@ async def test_api_exception_handling(mock_user_obj):
 
         # 1. Create Workspace Exceptions
         with patch("src.application.use_cases.workspace.create.index.CreateWorkspace.execute", side_effect=ValidationError("Invalid")):
-            resp = await client.post("/workspaces", json={"name": "Bad"})
+            resp = await client.post("/api/workspaces", json={"name": "Bad"})
             assert resp.status_code == 400
         with patch("src.application.use_cases.workspace.create.index.CreateWorkspace.execute", side_effect=Exception("Sever Error")):
-            resp = await client.post("/workspaces", json={"name": "Crash"})
+            resp = await client.post("/api/workspaces", json={"name": "Crash"})
             assert resp.status_code == 500
 
         # 2. Get Workspace Exceptions
         with patch("src.application.use_cases.workspace.get.index.GetWorkspace.execute", side_effect=WorkspaceNotFoundError("Gone")):
-            resp = await client.get(f"/workspaces/{wid}")
+            resp = await client.get(f"/api/workspaces/{wid}")
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.get.index.GetWorkspace.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.get(f"/workspaces/{wid}")
+            resp = await client.get(f"/api/workspaces/{wid}")
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.get.index.GetWorkspace.execute", side_effect=Exception("Boom")):
-            resp = await client.get(f"/workspaces/{wid}")
+            resp = await client.get(f"/api/workspaces/{wid}")
             assert resp.status_code == 500
 
         # 3. List Workspaces Exceptions
         with patch("src.application.use_cases.workspace.list.index.ListWorkspaces.execute", side_effect=Exception("Boom")):
-            resp = await client.get("/workspaces")
+            resp = await client.get("/api/workspaces")
             assert resp.status_code == 500
 
         # 4. Update Workspace Exceptions
         with patch("src.application.use_cases.workspace.update.index.UpdateWorkspace.execute", side_effect=WorkspaceNotFoundError("Gone")):
-            resp = await client.put(f"/workspaces/{wid}", json={"name": "Valid Name"})
+            resp = await client.put(f"/api/workspaces/{wid}", json={"name": "Valid Name"})
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.update.index.UpdateWorkspace.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.put(f"/workspaces/{wid}", json={"name": "Valid Name"})
+            resp = await client.put(f"/api/workspaces/{wid}", json={"name": "Valid Name"})
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.update.index.UpdateWorkspace.execute", side_effect=ValidationError("Bad")):
-            resp = await client.put(f"/workspaces/{wid}", json={"name": "Valid Name"})
+            resp = await client.put(f"/api/workspaces/{wid}", json={"name": "Valid Name"})
             assert resp.status_code == 400
         with patch("src.application.use_cases.workspace.update.index.UpdateWorkspace.execute", side_effect=Exception("Boom")):
-            resp = await client.put(f"/workspaces/{wid}", json={"name": "Valid Name"})
+            resp = await client.put(f"/api/workspaces/{wid}", json={"name": "Valid Name"})
             assert resp.status_code == 500
 
         # 5. Delete Workspace Exceptions
         with patch("src.application.use_cases.workspace.delete.index.DeleteWorkspace.execute", side_effect=WorkspaceNotFoundError("Gone")):
-            resp = await client.delete(f"/workspaces/{wid}")
+            resp = await client.delete(f"/api/workspaces/{wid}")
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.delete.index.DeleteWorkspace.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.delete(f"/workspaces/{wid}")
+            resp = await client.delete(f"/api/workspaces/{wid}")
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.delete.index.DeleteWorkspace.execute", side_effect=Exception("Boom")):
-            resp = await client.delete(f"/workspaces/{wid}")
+            resp = await client.delete(f"/api/workspaces/{wid}")
             assert resp.status_code == 500
 
         # 6. Invite Member Exceptions
         with patch("src.application.use_cases.workspace.members.invite.index.InviteMember.execute", side_effect=WorkspaceNotFoundError("No WS")):
-            resp = await client.post(f"/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
+            resp = await client.post(f"/api/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.invite.index.InviteMember.execute", side_effect=NotFoundError("No User")):
-            resp = await client.post(f"/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
+            resp = await client.post(f"/api/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.invite.index.InviteMember.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.post(f"/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
+            resp = await client.post(f"/api/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.members.invite.index.InviteMember.execute", side_effect=ValidationError("Bad")):
-            resp = await client.post(f"/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
+            resp = await client.post(f"/api/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
             assert resp.status_code == 400
         with patch("src.application.use_cases.workspace.members.invite.index.InviteMember.execute", side_effect=Exception("Boom")):
-            resp = await client.post(f"/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
+            resp = await client.post(f"/api/workspaces/{wid}/members", json={"email": "a@b.com", "role": "viewer"})
             assert resp.status_code == 500
 
         # 7. List Members Exceptions
         with patch("src.application.use_cases.workspace.members.list.index.ListMembers.execute", side_effect=WorkspaceNotFoundError("Gone")):
-            resp = await client.get(f"/workspaces/{wid}/members")
+            resp = await client.get(f"/api/workspaces/{wid}/members")
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.list.index.ListMembers.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.get(f"/workspaces/{wid}/members")
+            resp = await client.get(f"/api/workspaces/{wid}/members")
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.members.list.index.ListMembers.execute", side_effect=Exception("Boom")):
-            resp = await client.get(f"/workspaces/{wid}/members")
+            resp = await client.get(f"/api/workspaces/{wid}/members")
             assert resp.status_code == 500
 
         # 8. Update Member Role Exceptions
         with patch("src.application.use_cases.workspace.members.update.index.UpdateMemberRole.execute", side_effect=WorkspaceNotFoundError("No WS")):
-            resp = await client.put(f"/workspaces/{wid}/members/{uid}", json={"role": "editor"})
+            resp = await client.put(f"/api/workspaces/{wid}/members/{uid}", json={"role": "editor"})
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.update.index.UpdateMemberRole.execute", side_effect=MemberNotFoundError("No Mem")):
-            resp = await client.put(f"/workspaces/{wid}/members/{uid}", json={"role": "editor"})
+            resp = await client.put(f"/api/workspaces/{wid}/members/{uid}", json={"role": "editor"})
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.update.index.UpdateMemberRole.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.put(f"/workspaces/{wid}/members/{uid}", json={"role": "editor"})
+            resp = await client.put(f"/api/workspaces/{wid}/members/{uid}", json={"role": "editor"})
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.members.update.index.UpdateMemberRole.execute", side_effect=ValidationError("Bad")):
-            resp = await client.put(f"/workspaces/{wid}/members/{uid}", json={"role": "editor"})
+            resp = await client.put(f"/api/workspaces/{wid}/members/{uid}", json={"role": "editor"})
             assert resp.status_code == 400
         with patch("src.application.use_cases.workspace.members.update.index.UpdateMemberRole.execute", side_effect=Exception("Boom")):
-            resp = await client.put(f"/workspaces/{wid}/members/{uid}", json={"role": "editor"})
+            resp = await client.put(f"/api/workspaces/{wid}/members/{uid}", json={"role": "editor"})
             assert resp.status_code == 500
 
         # 9. Remove Member Exceptions
         with patch("src.application.use_cases.workspace.members.remove.index.RemoveMember.execute", side_effect=WorkspaceNotFoundError("No WS")):
-            resp = await client.delete(f"/workspaces/{wid}/members/{uid}")
+            resp = await client.delete(f"/api/workspaces/{wid}/members/{uid}")
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.remove.index.RemoveMember.execute", side_effect=MemberNotFoundError("No Mem")):
-            resp = await client.delete(f"/workspaces/{wid}/members/{uid}")
+            resp = await client.delete(f"/api/workspaces/{wid}/members/{uid}")
             assert resp.status_code == 404
         with patch("src.application.use_cases.workspace.members.remove.index.RemoveMember.execute", side_effect=UnauthorizedError("No")):
-            resp = await client.delete(f"/workspaces/{wid}/members/{uid}")
+            resp = await client.delete(f"/api/workspaces/{wid}/members/{uid}")
             assert resp.status_code == 403
         with patch("src.application.use_cases.workspace.members.remove.index.RemoveMember.execute", side_effect=ValidationError("Bad")):
-            resp = await client.delete(f"/workspaces/{wid}/members/{uid}")
+            resp = await client.delete(f"/api/workspaces/{wid}/members/{uid}")
             assert resp.status_code == 400
         with patch("src.application.use_cases.workspace.members.remove.index.RemoveMember.execute", side_effect=Exception("Boom")):
-            resp = await client.delete(f"/workspaces/{wid}/members/{uid}")
+            resp = await client.delete(f"/api/workspaces/{wid}/members/{uid}")
             assert resp.status_code == 500
 
     app.dependency_overrides = {}

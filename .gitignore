@@ -162,3 +162,20 @@ Thumbs.db
 
 # Docker
 .docker/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+
+# Vite/React
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo

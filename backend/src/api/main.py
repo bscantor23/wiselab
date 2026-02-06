@@ -18,9 +18,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(workspace.router)
-app.include_router(budget.router)
+from src.api.routes import auth, budget, workspace
+from fastapi import APIRouter
+
+api_router = APIRouter(prefix="/api")
+api_router.include_router(auth.router)
+api_router.include_router(workspace.router)
+api_router.include_router(budget.router)
+
+app.include_router(api_router)
 
 
 @app.get("/")

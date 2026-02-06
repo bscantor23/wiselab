@@ -20,6 +20,7 @@ async def test_refresh_token_success(mock_repo, mock_user):
     token = JWTService.create_token({"sub": str(mock_user.id)}, token_type="refresh")
     result = await use_case.execute(RefreshTokenRequestDto(refresh_token=token))
     
+    assert result.user.email == str(mock_user.email)
     assert result.access_token is not None
     assert result.refresh_token is not None
 

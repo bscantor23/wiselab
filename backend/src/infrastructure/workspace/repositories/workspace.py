@@ -143,6 +143,7 @@ class SQLWorkspaceRepository(WorkspaceRepository):
             .values(
                 name=workspace.name,
                 description=workspace.description,
+                category=workspace.category,
                 is_active=workspace.is_active,
                 updated_at=workspace.updated_at,
             )

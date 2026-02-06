@@ -11,6 +11,7 @@ class Workspace(Entity):
         name: str,
         owner_id: UUID,
         description: Optional[str] = None,
+        category: Optional[str] = None,
         is_active: bool = True,
         created_at: Optional[datetime] = None,
         updated_at: Optional[datetime] = None,
@@ -19,6 +20,7 @@ class Workspace(Entity):
         super().__init__(id)
         self._name = name
         self._description = description
+        self._category = category
         self._owner_id = owner_id
         self._is_active = is_active
         self._created_at = created_at or datetime.now(timezone.utc)
@@ -31,6 +33,10 @@ class Workspace(Entity):
     @property
     def description(self) -> Optional[str]:
         return self._description
+
+    @property
+    def category(self) -> Optional[str]:
+        return self._category
 
     @property
     def owner_id(self) -> UUID:
@@ -49,10 +55,15 @@ class Workspace(Entity):
         return self._updated_at
 
     def update_details(
-        self, name: Optional[str] = None, description: Optional[str] = None
+        self,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        category: Optional[str] = None,
     ):
         if name:
             self._name = name
         if description is not None:
             self._description = description
+        if category is not None:
+            self._category = category
         self._updated_at = datetime.now(timezone.utc)

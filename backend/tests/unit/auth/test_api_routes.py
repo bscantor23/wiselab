@@ -44,7 +44,7 @@ async def test_auth_route_unhandled_exceptions():
     async with AsyncClient(app=app, base_url="http://test") as client:
         # Register Exception
         with patch("src.api.routes.auth.RegisterUser.execute", side_effect=Exception("Register fail")):
-            response = await client.post("/auth/register", json={
+            response = await client.post("/api/auth/register", json={
                 "email": "fail@example.com",
                 "password": "Password123!",
                 "full_name": "Fail"
@@ -54,7 +54,7 @@ async def test_auth_route_unhandled_exceptions():
 
         # Login Exception
         with patch("src.api.routes.auth.LoginUser.execute", side_effect=Exception("Login fail")):
-            response = await client.post("/auth/login", json={
+            response = await client.post("/api/auth/login", json={
                 "email": "fail@example.com",
                 "password": "Password123!"
             })

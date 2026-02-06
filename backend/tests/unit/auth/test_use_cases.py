@@ -50,6 +50,7 @@ async def test_login_user_success():
     mock_user.email = Email("test@example.com")
     mock_user.password_hash = hashed
     mock_user.is_active = True
+    mock_user.full_name = "Test User"
 
     mock_repo = MagicMock()
     mock_repo.get_by_email = AsyncMock(return_value=mock_user)
@@ -68,6 +69,7 @@ async def test_login_user_inactive():
     mock_user = MagicMock(spec=User)
     mock_user.password_hash = "hash"
     mock_user.is_active = False
+    mock_user.full_name = "Inactive User"
 
     with patch("src.infrastructure.auth.services.hasher.Hasher.verify_password", return_value=True):
         mock_repo = MagicMock()
@@ -83,6 +85,7 @@ async def test_login_user_invalid_password():
     mock_user = MagicMock(spec=User)
     mock_user.password_hash = "different-hash"
     mock_user.is_active = True
+    mock_user.full_name = "Invalid Pass"
 
     mock_repo = MagicMock()
     mock_repo.get_by_email = AsyncMock(return_value=mock_user)

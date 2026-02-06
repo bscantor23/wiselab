@@ -4,7 +4,7 @@ from src.domain.errors import UnauthorizedError
 from src.infrastructure.auth.services.hasher import Hasher
 from src.infrastructure.auth.services.jwt import JWTService
 
-from .dtos import LoginUserRequestDto, LoginUserResponseDto
+from .dtos import LoginUserRequestDto, LoginUserResponseDto, UserResponseDto
 
 
 class LoginUser:
@@ -24,5 +24,7 @@ class LoginUser:
         refresh_token = JWTService.create_token(data=payload, token_type="refresh")
 
         return LoginUserResponseDto(
-            access_token=access_token, refresh_token=refresh_token
+            user=UserResponseDto.model_validate(user),
+            access_token=access_token,
+            refresh_token=refresh_token
         )

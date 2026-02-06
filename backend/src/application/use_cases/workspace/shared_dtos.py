@@ -13,6 +13,7 @@ class WorkspaceResponseDto(BaseModel):
     id: UUID
     name: str
     description: Optional[str] = None
+    category: Optional[str] = None
     owner_id: UUID
     is_active: bool
     created_at: datetime

@@ -91,7 +91,7 @@ async def test_create_budget_success(client, user):
         
         mock_instance.execute = AsyncMock(return_value=expected_budget)
 
-        response = await client.post("/budgets", json=payload)
+        response = await client.post("/api/budgets", json=payload)
 
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
@@ -112,7 +112,7 @@ async def test_create_budget_unauthorized(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=UnauthorizedError("Access denied"))
 
-        response = await client.post("/budgets", json=payload)
+        response = await client.post("/api/budgets", json=payload)
         
         assert response.status_code == status.HTTP_403_FORBIDDEN
         assert response.json()["detail"] == "Access denied"
@@ -131,7 +131,7 @@ async def test_create_budget_conflict(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=ConflictError("Exists"))
 
-        response = await client.post("/budgets", json=payload)
+        response = await client.post("/api/budgets", json=payload)
         
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json()["detail"] == "Exists"
@@ -155,7 +155,7 @@ async def test_get_budget_success(client):
         
         mock_instance.execute = AsyncMock(return_value=(budget, 500.0, 50.0))
 
-        response = await client.get(f"/budgets/{budget_id}")
+        response = await client.get(f"/api/budgets/{budget_id}")
         
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -170,7 +170,7 @@ async def test_get_budget_not_found(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=NotFoundError("Not found"))
 
-        response = await client.get(f"/budgets/{budget_id}")
+        response = await client.get(f"/api/budgets/{budget_id}")
         
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -195,7 +195,7 @@ async def test_list_budgets_success(client):
         # Returns list of tuples (budget, spent, progress)
         mock_instance.execute = AsyncMock(return_value=([(budget, 100.0, 10.0)], 1))
 
-        response = await client.get(f"/budgets?workspace_id={workspace_id}")
+        response = await client.get(f"/api/budgets?workspace_id={workspace_id}")
         
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -223,7 +223,7 @@ async def test_update_budget_success(client):
         
         mock_instance.execute = AsyncMock(return_value=(budget, 0.0, 0.0))
 
-        response = await client.put(f"/budgets/{budget_id}", json=payload)
+        response = await client.put(f"/api/budgets/{budget_id}", json=payload)
         
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
@@ -237,7 +237,7 @@ async def test_delete_budget_success(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(return_value=None)
 
-        response = await client.delete(f"/budgets/{budget_id}")
+        response = await client.delete(f"/api/budgets/{budget_id}")
         
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
@@ -268,7 +268,7 @@ async def test_list_categories(client, mock_category_repo):
     # We should access mock_workspace_repo from client fixture? 
     # Yes, we requested mock_workspace_repo in this test signature, so we can configure it.
     
-    response = await client.get(f"/budgets/categories?workspace_id={workspace_id}")
+    response = await client.get(f"/api/budgets/categories?workspace_id={workspace_id}")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -290,7 +290,7 @@ async def test_internal_server_error(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=Exception("Unexpected"))
 
-        response = await client.post("/budgets", json=payload)
+        response = await client.post("/api/budgets", json=payload)
         
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -305,7 +305,7 @@ async def test_list_categories_defaults(client, mock_category_repo):
     
     mock_category_repo.list_defaults.return_value = [category]
     
-    response = await client.get("/budgets/categories")
+    response = await client.get("/api/budgets/categories")
     
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -320,7 +320,7 @@ async def test_list_categories_unauthorized(client, mock_category_repo, mock_wor
     mock_workspace_repo.get_member.return_value = None
     mock_workspace_repo.get_by_id.return_value = MagicMock(owner_id=uuid4()) # Not current user
     
-    response = await client.get(f"/budgets/categories?workspace_id={workspace_id}")
+    response = await client.get(f"/api/budgets/categories?workspace_id={workspace_id}")
     
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -331,7 +331,7 @@ async def test_get_budget_unauthorized(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=UnauthorizedError("Access denied"))
         
-        response = await client.get(f"/budgets/{budget_id}")
+        response = await client.get(f"/api/budgets/{budget_id}")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 @pytest.mark.asyncio
@@ -341,7 +341,7 @@ async def test_list_budgets_unauthorized(client):
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=UnauthorizedError("Access denied"))
         
-        response = await client.get(f"/budgets?workspace_id={workspace_id}")
+        response = await client.get(f"/api/budgets?workspace_id={workspace_id}")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 @pytest.mark.asyncio
@@ -354,17 +354,17 @@ async def test_update_budget_errors(client):
         
         # Not Found
         mock_instance.execute = AsyncMock(side_effect=NotFoundError("Not found"))
-        response = await client.put(f"/budgets/{budget_id}", json=payload)
+        response = await client.put(f"/api/budgets/{budget_id}", json=payload)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         
         # Unauthorized
         mock_instance.execute = AsyncMock(side_effect=UnauthorizedError("Denied"))
-        response = await client.put(f"/budgets/{budget_id}", json=payload)
+        response = await client.put(f"/api/budgets/{budget_id}", json=payload)
         assert response.status_code == status.HTTP_403_FORBIDDEN
         
         # Validation Error
         mock_instance.execute = AsyncMock(side_effect=ValidationError("Invalid"))
-        response = await client.put(f"/budgets/{budget_id}", json=payload)
+        response = await client.put(f"/api/budgets/{budget_id}", json=payload)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 @pytest.mark.asyncio
@@ -376,12 +376,12 @@ async def test_delete_budget_errors(client):
         
         # Not Found
         mock_instance.execute = AsyncMock(side_effect=NotFoundError("Not found"))
-        response = await client.delete(f"/budgets/{budget_id}")
+        response = await client.delete(f"/api/budgets/{budget_id}")
         assert response.status_code == status.HTTP_404_NOT_FOUND
         
         # Unauthorized
         mock_instance.execute = AsyncMock(side_effect=UnauthorizedError("Denied"))
-        response = await client.delete(f"/budgets/{budget_id}")
+        response = await client.delete(f"/api/budgets/{budget_id}")
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 @pytest.mark.asyncio
@@ -394,32 +394,32 @@ async def test_internal_server_errors_all_routes(client):
     with patch("src.api.routes.budget.GetBudget") as MockUseClass:
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=Exception("Unexpected"))
-        response = await client.get(f"/budgets/{budget_id}")
+        response = await client.get(f"/api/budgets/{budget_id}")
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # List Budgets
     with patch("src.api.routes.budget.ListBudgets") as MockUseClass:
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=Exception("Unexpected"))
-        response = await client.get(f"/budgets?workspace_id={workspace_id}")
+        response = await client.get(f"/api/budgets?workspace_id={workspace_id}")
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # Update Budget
     with patch("src.api.routes.budget.UpdateBudget") as MockUseClass:
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=Exception("Unexpected"))
-        response = await client.put(f"/budgets/{budget_id}", json=payload)
+        response = await client.put(f"/api/budgets/{budget_id}", json=payload)
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
     # Delete Budget
     with patch("src.api.routes.budget.DeleteBudget") as MockUseClass:
         mock_instance = MockUseClass.return_value
         mock_instance.execute = AsyncMock(side_effect=Exception("Unexpected"))
-        response = await client.delete(f"/budgets/{budget_id}")
+        response = await client.delete(f"/api/budgets/{budget_id}")
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
 
 @pytest.mark.asyncio
 async def test_list_categories_internal_error(client, mock_category_repo):
     mock_category_repo.list_defaults.side_effect = Exception("Repo fail")
-    response = await client.get("/budgets/categories")
+    response = await client.get("/api/budgets/categories")
     assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR

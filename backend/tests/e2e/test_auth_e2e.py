@@ -15,11 +15,11 @@ async def test_auth_full_flow(client: AsyncClient):
     # 1.1 Try with weak password (should fail at Pydantic level)
     weak_data = user_data.copy()
     weak_data["password"] = "12345678"
-    response = await client.post("/auth/register", json=weak_data)
+    response = await client.post("/api/auth/register", json=weak_data)
     assert response.status_code == 422 
     
     # 1.2 Valid registration
-    response = await client.post("/auth/register", json=user_data)
+    response = await client.post("/api/auth/register", json=user_data)
     assert response.status_code == 201
     
     # 2. Login
@@ -27,7 +27,7 @@ async def test_auth_full_flow(client: AsyncClient):
         "email": "fullflow@example.com",
         "password": "Password123!"
     }
-    response = await client.post("/auth/login", json=login_data)
+    response = await client.post("/api/auth/login", json=login_data)
     assert response.status_code == 200
     tokens = response.json()
     assert "access_token" in tokens
@@ -43,7 +43,7 @@ async def test_auth_full_flow(client: AsyncClient):
     # Small delay to ensure exp/iat difference if it was too fast
     import asyncio
     await asyncio.sleep(0.1) 
-    response = await client.post("/auth/refresh", json=refresh_data)
+    response = await client.post("/api/auth/refresh", json=refresh_data)
     assert response.status_code == 200
     new_tokens = response.json()
     assert "access_token" in new_tokens
@@ -52,7 +52,7 @@ async def test_auth_full_flow(client: AsyncClient):
 
     # 5. Login with wrong password (should fail)
     login_data["password"] = "wrongpassword"
-    response = await client.post("/auth/login", json=login_data)
+    response = await client.post("/api/auth/login", json=login_data)
     assert response.status_code == 401
     assert "Invalid credentials" in response.json()["detail"]
 
@@ -60,7 +60,7 @@ async def test_auth_full_flow(client: AsyncClient):
 async def test_auth_route_exceptions(client: AsyncClient):
     # Test ValidationError in /register
     with patch("src.api.routes.auth.RegisterUser.execute", side_effect=ValidationError("Simulated validation error")):
-        response = await client.post("/auth/register", json={
+        response = await client.post("/api/auth/register", json={
             "email": "valid@example.com",
             "password": "Password123!",
             "full_name": "Test"
@@ -70,7 +70,7 @@ async def test_auth_route_exceptions(client: AsyncClient):
 
     # Test Exception in /register
     with patch("src.api.routes.auth.RegisterUser.execute", side_effect=Exception("Simulated crash")):
-        response = await client.post("/auth/register", json={
+        response = await client.post("/api/auth/register", json={
             "email": "valid@example.com",
             "password": "Password123!",
             "full_name": "Test"
@@ -80,7 +80,7 @@ async def test_auth_route_exceptions(client: AsyncClient):
 
     # Test UnauthorizedError in /login
     with patch("src.api.routes.auth.LoginUser.execute", side_effect=UnauthorizedError("Account deactivated")):
-        response = await client.post("/auth/login", json={
+        response = await client.post("/api/auth/login", json={
             "email": "valid@example.com",
             "password": "Password123!"
         })

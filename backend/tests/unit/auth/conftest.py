@@ -25,6 +25,7 @@ def mock_user():
     user.email = Email("test@example.com")
     user.password_hash = "hash"
     user.is_active = True
+    user.full_name = "Mock User"
     user.updated_at = datetime.now()
     user.created_at = datetime.now()
     return user

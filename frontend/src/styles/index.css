@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply font-display text-slate-900;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-primary hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl transition-all;
+    }
+
+    .form-input {
+        @apply block w-full rounded-xl border-slate-200 bg-slate-50 text-slate-900 placeholder-slate-400 focus:border-primary focus:ring-primary sm:text-sm transition-all;
+    }
+}
+
+/* Custom scrollbar for better UI */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+}

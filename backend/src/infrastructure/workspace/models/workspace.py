@@ -27,6 +27,7 @@ class WorkspaceORM(Base):
     )
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
+    category = Column(String, nullable=True) # e.g., 'Personal', 'Business', 'Investment'
     owner_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),

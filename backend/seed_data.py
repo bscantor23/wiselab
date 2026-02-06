@@ -105,13 +105,27 @@ async def seed(reset: bool = False):
 
         # 3. Create 10 Workspaces
         print("Creating 10 workspaces...")
+        workspace_templates = [
+            ("Finanzas Familiares", "Gestión integral de ingresos, gastos y ahorros del hogar.", "Hogar"),
+            ("Consultoría Pro S.L.", "Control presupuestario y seguimiento de facturación corporativa.", "Empresa"),
+            ("Ahorro para Vivienda", "Fondo dedicado para la entrada de la primera residencia.", "Inversión"),
+            ("Gastos del Viaje Japón", "Presupuesto detallado para transporte, alojamiento y ocio en Asia.", "Viajes"),
+            ("Cartera de Inversión", "Seguimiento de dividendos, acciones y mercado cripto.", "Inversión"),
+            ("Educación Continua", "Fondo para cursos técnicos, certificaciones y libros.", "Educación"),
+            ("Presupuesto Personal", "Control diario de gastos hormiga y flujo de caja personal.", "Personal"),
+            ("Startup Ecommerce", "Operaciones financieras, marketing y logística del negocio.", "Empresa"),
+            ("Mantenimiento del Hogar", "Fondo para reparaciones, mejoras y servicios domésticos.", "Hogar"),
+            ("Fondo de Emergencia", "Reserva de seguridad para imprevistos y tranquilidad financiera.", "Personal"),
+        ]
+        
         workspaces = []
-        for i in range(10):
+        for name, desc, cat in workspace_templates:
             owner = random.choice(users)
             workspace = WorkspaceORM(
                 id=uuid.uuid4(),
-                name=f"Espacio de {fake.company()}",
-                description=fake.sentence(),
+                name=name,
+                description=desc,
+                category=cat,
                 owner_id=owner.id,
                 is_active=True
             )
