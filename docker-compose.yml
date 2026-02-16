@@ -30,6 +30,7 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
       SEED_DB: ${SEED_DB:-false}
       RESET_DB: ${RESET_DB:-false}
+      PYTHONPATH: /app
     depends_on:
       - db
 
